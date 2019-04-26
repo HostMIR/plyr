@@ -2442,7 +2442,9 @@ typeof navigator === "object" && (function (global, factory) {
       var list = this.elements.settings.panels.quality.querySelector('[role="menu"]'); // Set options if passed and filter based on uniqueness and config
 
       if (is$1.array(options)) {
-        this.options.quality = dedupe(options).filter(function (quality) {
+        this.options.quality = this.config.hls.levels.map(function (level) {
+          return level.height;
+        }) || [].filter(function (quality) {
           return _this5.config.quality.options.includes(quality);
         });
       } // Toggle the pane and tab
@@ -3392,6 +3394,8 @@ typeof navigator === "object" && (function (global, factory) {
       if (this.captions.currentTrack !== index) {
         this.captions.currentTrack = index;
         var track = tracks[index];
+
+        track.mode = 'showing';
 
         var _ref = track || {},
             language = _ref.language; // Store reference to node for invalidation on remove
@@ -8697,6 +8701,27 @@ typeof navigator === "object" && (function (global, factory) {
         }
 
         var quality = [!is$1.empty(input) && Number(input), this.storage.get('quality'), config.selected, config.default].find(is$1.number);
+
+
+        /***
+         * by HostMIR
+         * Меняем качество через Hls.js
+         * @type {*|boolean|number|never}
+         * @private
+         */
+        var _index = this.config.hls.levels.findIndex(function(level){
+            return level.height === quality;
+        });
+
+        this.config.hls.nextLevel = _index;
+
+
+        triggerEvent.call(this, this.media, 'qualitychange', false, {
+          quality: input
+        });
+
+        /*** END **/
+
         var updateStorage = true;
 
         if (!options.includes(quality)) {
