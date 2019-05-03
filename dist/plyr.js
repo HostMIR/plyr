@@ -2459,9 +2459,9 @@ typeof navigator === "object" && (function (global, factory) {
       var type = 'quality';
       var list = this.elements.settings.panels.quality.querySelector('[role="menu"]'); // Set options if passed and filter based on uniqueness and config
 
-      if (is$1.array(options)) {
-        this.options.quality = dedupe(options).filter(function (quality) {
-          return _this6.config.quality.options.includes(quality);
+      if (is$1.array(options) && this.config.hls.levels.length > 1 && this.config.hls.levels[0].height) { // Mod by HostMIR
+        this.options.quality = this.config.hls.levels.map(function (level) {
+          return level.height;
         });
       } // Toggle the pane and tab
 
@@ -8794,12 +8794,36 @@ typeof navigator === "object" && (function (global, factory) {
       set: function set(input) {
         var config = this.config.quality;
         var options = this.options.quality;
+        var hls = this.config.hls; // Mod by HostMIR
 
         if (!options.length) {
           return;
         }
 
         var quality = [!is$1.empty(input) && Number(input), this.storage.get('quality'), config.selected, config.default].find(is$1.number);
+
+
+        /***
+         * by HostMIR
+         * Меняем качество через Hls.js
+         * @type {*|boolean|number|never}
+         * @private
+         */
+
+        if (hls.levels && hls.levels.length > 1 && 'height' in hls.levels[0]) {
+          var _index = hls.levels.findIndex(function (level) {
+            return level.height;
+          });
+
+          hls.nextLevel = _index;
+        }
+
+        triggerEvent.call(this, this.media, 'qualitychange', false, {
+          quality: input || hls.levels.length > 1 && 'height' in hls.levels[0] && hls.levels[_index].height || hls.levels[0].height
+        });
+
+        /*** END **/
+
         var updateStorage = true;
 
         if (!options.includes(quality)) {
