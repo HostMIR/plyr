@@ -2459,8 +2459,10 @@ typeof navigator === "object" && (function (global, factory) {
       var type = 'quality';
       var list = this.elements.settings.panels.quality.querySelector('[role="menu"]'); // Set options if passed and filter based on uniqueness and config
 
-      if (is$1.array(options) && this.config.hls.levels.length > 1 && this.config.hls.levels[0].height) { // Mod by HostMIR
-        this.options.quality = this.config.hls.levels.map(function (level) {
+      var levels = (this.config.hls.levels || []);
+
+      if (is$1.array(options) && levels.length > 1 && levels[0].height) { // Mod by HostMIR
+        this.options.quality = levels.map(function (level) {
           return level.height;
         });
       } // Toggle the pane and tab
