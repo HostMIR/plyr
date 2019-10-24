@@ -43,6 +43,7 @@ class Ads {
             container: null,
             displayContainer: null,
         };
+        this.info = null;
         this.manager = null;
         this.loader = null;
         this.cuePoints = null;
@@ -158,6 +159,9 @@ class Ads {
             class: this.player.config.classNames.ads,
         });
 
+        this.elements.container.innerHTML += `<div class="add_favorites d-flex align-items-center"><div class="favorites_img"></div><span>${i18n.get('skip_advertisement', this.player.config)}</span></div>`;
+        this.elements.container.innerHTML += `<div class="name_films_recommended"><span></span></div>`;
+
         this.player.elements.container.appendChild(this.elements.container);
 
         // So we can run VPAID2
@@ -230,7 +234,7 @@ class Ads {
 
         const update = () => {
             const time = formatTime(Math.max(this.manager.getRemainingTime(), 0));
-            const label = `${i18n.get('advertisement', this.player.config)} - ${time}`;
+            const label = `${time}`;
             this.elements.container.setAttribute('data-badge-text', label);
         };
 
@@ -320,6 +324,7 @@ class Ads {
 
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
+                this.info = event.getAdData();
                 // This is the first event sent for an ad - it is possible to determine whether the
                 // ad is a video ad or an overlay
                 this.trigger('loaded');
