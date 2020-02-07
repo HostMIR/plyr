@@ -6513,6 +6513,10 @@ typeof navigator === "object" && (function (global, factory) {
         this.elements.container = createElement('div', {
           class: this.player.config.classNames.ads
         });
+        
+        this.elements.container.innerHTML += `<div class="add_favorites d-flex align-items-center"><div class="favorites_img"></div><span>${i18n.get('skip_advertisement', this.player.config)}</span></div>`;
+        this.elements.container.innerHTML += `<div class="name_films_recommended"><span></span></div>`;  
+          
         this.player.elements.container.appendChild(this.elements.container); // So we can run VPAID2
 
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED); // Set language
